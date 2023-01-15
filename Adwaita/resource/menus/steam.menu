@@ -1,6 +1,5 @@
 menubar {
-	Steam {
-		text=""
+	Steam { text=""
 
 		ViewFriends			{ text="#steam_menu_view_friends" shellcmd="steam://open/friends" }
 		ViewPlayerList		{ text="#steam_menu_view_players" shellcmd="steam://friends/players" }
