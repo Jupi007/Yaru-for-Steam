@@ -35,6 +35,14 @@ CSS_FILE = "resource/webkit.css"
 TARGET_NORMAL = "~/.steam/steam"
 TARGET_FLATPAK = "~/.var/app/com.valvesoftware.Steam/.steam/steam"
 
+STEAM_LOOPBACK = "https://steamloopback.host"
+STEAM_PATCHED_HEADER = "/*patched*/"
+
+STEAM_FRIENDS_CSS = "clientui/css/friends.css"
+STEAM_LIBRARY_CSS = "steamui/css/library.css"
+STEAM_CUSTOM_LIBRARY = "steamui/libraryroot.custom.css"
+STEAM_CUSTOM_FRIENDS = "clientui/friends.custom.css"
+
 skindir = Path(SKIN_DIR)
 patchdir = Path(PATCH_DIR)
 webthemedir = Path(WEB_THEME_DIR)
@@ -47,6 +55,7 @@ WEB_BASE_FILES = [
 	webthemedir / "base/4_collections.css",
 	webthemedir / "base/5_game_details.css",
 	webthemedir / "base/6_downloads.css",
+	webthemedir / "base/7_dialogs.css",
 	webthemedir / "base/9_scrollbars.css",
 	webthemedir / "base/10_login.css",
 	webthemedir / "base/11_launch_options.css",
@@ -62,6 +71,7 @@ WEB_FULL_FILES = [
 	webthemedir / "full/5_game_details.css",
 	webthemedir / "base/6_downloads.css",
 	webthemedir / "full/6_downloads.css",
+	webthemedir / "base/7_dialogs.css",
 	webthemedir / "full/7_dialogs.css",
 	webthemedir / "full/8_chat.css",
 	webthemedir / "base/9_scrollbars.css",
@@ -73,6 +83,8 @@ WEB_FULL_FILES = [
 SHARED_PATCHES = [
 	"windowcontrols/hide-close",
 	"windowcontrols/right-all",
+	"windowcontrols/left-all",
+	"windowcontrols/left",
 ]
 
 # List Options
@@ -136,7 +148,7 @@ def gen_webkit_theme(target: Path, name: str, selected_extras: list[Path]):
 				we = f.removesuffix(".css")
 				f = Path(f)
 
-				if not f.exists or f.suffix != ".css":
+				if not f.exists() or f.suffix != ".css":
 					f = webthemedir / "extras/{}{}".format(we, ".css")
 
 				if f.exists():
@@ -205,6 +217,47 @@ def install(source: Path, target: Path, name: str):
 		shutil.rmtree(target_skin)
 	shutil.copytree(source, target_skin)
 
+def patch_client_css(source: Path, target: Path, name: str):
+	if args.no_steam_patch or args.web_theme == "none":
+		return
+
+	print(f"{TEXT_BLUE}{TEXT_ARROW} Patching Steam Client {TEXT_BOLD}{name}{TEXT_RESET}{TEXT_BLUE} Files...{TEXT_RESET}")
+
+	if not target.is_dir():
+		print(f"{TEXT_PURPLE}{TEXT_INFO} Directory {TEXT_BOLD}{target}{TEXT_RESET}{TEXT_PURPLE} does not exist{TEXT_RESET}")
+		return
+
+	if name == "Library":
+		target_css = target / STEAM_LIBRARY_CSS
+		custom_css = target / STEAM_CUSTOM_LIBRARY
+		custom_css_name = custom_css.name
+	elif name == "Friends":
+		target_css = target / STEAM_FRIENDS_CSS
+		custom_css = target / STEAM_CUSTOM_FRIENDS
+		custom_css_name = custom_css.name
+	else:
+		raise SystemExit(f"{TEXT_RED}{TEXT_CROSS} Invalid steam css patch selected: {name}{TEXT_RESET}")
+
+	if not target_css.exists():
+		print(f"{TEXT_PURPLE}{TEXT_INFO} File {TEXT_BOLD}{target_css}{TEXT_RESET}{TEXT_PURPLE} does not exist{TEXT_RESET}")
+		return
+
+	shutil.copyfile(source / CSS_FILE, custom_css)
+
+	with target_css.open() as css_file:
+		if css_file.readline().strip() == STEAM_PATCHED_HEADER:
+			return
+
+	orig_css = target_css.rename(target_css.with_suffix(".original.css"))
+	name = target_css.stem
+	css_dir = "css"
+	content = f'{STEAM_PATCHED_HEADER}\n@import url("{STEAM_LOOPBACK}/{css_dir}/{name}.original.css");\n@import url("{STEAM_LOOPBACK}/{custom_css_name}");\n'
+	target_css.open('w').write(content)
+
+	size_diff = orig_css.stat().st_size - target_css.stat().st_size
+	padding = "\t" * size_diff
+	target_css.open('a').write(padding)
+
 if __name__ == "__main__":
 	if not skindir.exists():
 		raise SystemExit(f"{TEXT_RED}{TEXT_CROSS} Skin directory {TEXT_BOLD}{SKIN_DIR}{TEXT_RESET}{TEXT_RED} does not exist. Make sure you're running the installer from its root directory{TEXT_RESET}")
@@ -218,8 +271,9 @@ if __name__ == "__main__":
 	parser.add_argument("-t", "--target", nargs = "+", action = "extend", default = ["normal", "flatpak"], help = "Install targets: 'normal', 'flatpak', custom paths")
 	parser.add_argument("-l", "--list-options", action = "store_true", help = "List available patches, themes, web extras and exit")
 	parser.add_argument("-p", "--patch", nargs = "+", action = "extend", help = "Apply one or multiple patches")
-	parser.add_argument("-n", "--name", default = SKIN_NAME, help = "Rename installed skin")
-	parser.add_argument("-w", "--web-theme", choices = ["base", "full", "none"], default = "base", help = "Choose web theme variant")
+	parser.add_argument("-n", "--name", default = SKIN_DIR, help = "Rename installed skin")
+	parser.add_argument("-nsp", "--no-steam-patch", action = "store_true", help = "Do not patch steam files")
+	parser.add_argument("-w", "--web-theme", choices = ["base", "full", "none"], default = "full", help = "Choose web theme variant")
 	parser.add_argument("-we", "--web-extras", nargs = "+", action = "extend", help = "Enable one or multiple web theme extras")
 	args = parser.parse_args()
 
@@ -299,4 +353,6 @@ if __name__ == "__main__":
 
 		for target in targets:
 			install(sourcedir, target, args.name)
+			patch_client_css(sourcedir, target, "Library")
+
 		print(f"{TEXT_GREEN}{TEXT_CHECK} Done!{TEXT_RESET}")

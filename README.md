@@ -12,17 +12,18 @@ The Yaru icon assets (any and all source `.svg` files under `Yaru/` or related r
 
 * **Main window**: done.
 * **Settings**: mostly done.
-* **New library, new chat, other web-based client parts**: partially done.
+* **New library, new chat, other web-based client parts**: mostly done, with slight [limitations](#limitations).
 * **Overlay**: done.
 * **Small mode**: done.
 * **Old library, old chat, other old unused windows**: not planned.
-* **Recoloring**: colors can be changed via making a new theme. See `color_themes` dir.
+* **Recoloring**: colors can be changed via making a new theme. See `extras/colorthemes` dir.
 * **Light theme**: not planned, would require redrawing all assets to be visible on light backgrounds.
 
 ### Limitations
 
 * **Rounded corners**: impossible to do in a Steam skin, use [Rounded Window Corners extension](https://github.com/yilozt/rounded-window-corners) or [mutter-rounded](https://github.com/yilozt/mutter-rounded) on GNOME
 * **Height of menu/sidebar items**: doesn't seem to be possible to increase
+* **Library Theming**: While the installer will patch steam files to allow theming the library, when steam updates these files they will be reset. A reinstall is currently needed to repatch them.
 
 ## Requirements
 
@@ -66,6 +67,12 @@ The Yaru icon assets (any and all source `.svg` files under `Yaru/` or related r
 <details><summary>Dracula</summary>
 
 ![Dracula](/extras/colorthemes/dracula/preview.png?raw=true)
+
+</details>
+
+<details><summary>Gruvbox</summary>
+
+![Gruvbox](/extras/colorthemes/gruvbox/preview.png?raw=true)
 
 </details>
 
@@ -118,7 +125,7 @@ The Yaru icon assets (any and all source `.svg` files under `Yaru/` or related r
 ### With installer script
 
 ```bash
-git clone https://github.com/Jupi007/Yaru-for-Steam
+git clone https://github.com/ubuntu/yaru-for-steam
 cd Yaru-for-Steam
 ./install.py
 ```
@@ -137,7 +144,9 @@ Run `./install.py -h` to see all installer options.
 
 ### Manual installation
 
-1. Download the [latest skin version](https://github.com/Jupi007/Yaru-for-Steam/archive/master.zip)
+Note: Installation with this method is lacking in several features, one of the installers is preferred.
+
+1. Download the [latest skin version](https://github.com/ubuntu/yaru-for-steam/archive/master.zip)
 2. Extract `Adwaita` directory into Steam `skins` directory (create if it doesn't exist):
    * **Linux**: `~/.steam/steam/skins` or `~/.local/share/Steam/skins`
    * **Linux (flatpak)**: `~/.var/app/com.valvesoftware.Steam/.local/share/Steam/skins`
