@@ -2,7 +2,8 @@
 /* --- Colors --- */
 /* -------------- */
 
-:root {
+:root
+{
 	/* General */
 	--bg: #2c2c2c;
 	--fg: #ffffff;
@@ -103,7 +104,7 @@
 	--card_radius: calc(var(--button_radius) + 6px);
 	--card_solid_bg: #3A3A3A;
 
-	--focusring: rgba(120, 174, 237, 0.5);
+	--focusring: rgba(233, 84, 32, 0.5);
 	--focusring_bs: inset 0px 0px 0px 2px var(--focusring);
 
 	--ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -132,34 +133,10 @@
 	--window_fg: var(--fg);
 	--window_radius: calc(var(--button_radius) + 6px);
 
-	--large_title_size: 24px;
-	--large_title_weight: 300;
-
-	--title_1_size: 20px;
-	--title_1_weight: 800;
-
-	--popover_bg: #383838;
-	--popover_fg: var(--fg);
-	--popover_radius: var(--window_radius);
-
-	--title_3_size: 14px;
-	--title_3_weight: bold;
-
-	--border: rgba(255, 255, 255, 0.15);
-
-	--scrollbar: rgba(255, 255, 255, 0.2);
-	--scrollbar_hover: rgba(255, 255, 255, 0.4);
-	--scrollbar_active: rgba(255, 255, 255, 0.6);
-}
-
-	--window_bg: var(--bg);
-	--window_fg: var(--fg);
-	--window_radius: calc(var(--button_radius) + 6px);
-
 	--view_bg: #1e1e1e;
 	--view_fg: var(--fg);
 
-	--headerbar_bg: #242424;
+	--headerbar_bg: #303030;
 	--headerbar_fg: var(--fg);
 	--headerbar_border: var(--fg);
 	--headerbar_backdrop: var(--bg);
@@ -184,3 +161,4 @@
 	--scrollbar_hover: rgba(255, 255, 255, 0.4);
 	--scrollbar_active: rgba(255, 255, 255, 0.6);
 }
+
